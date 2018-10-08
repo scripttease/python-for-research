@@ -46,7 +46,7 @@ In [27]: for i in range(100):
     ...:
     ...:
 
-In [8]: plt.hist(rolls, bins=np.linspace(0.5,6.6,7))
+In [8]: plt.hist(rolls, bins=np.linspace(0.5,6.5,7))
 Out[8]:
 (array([15., 14., 11., 18., 18., 24.]),
  array([0.5       , 1.51666667, 2.53333333, 3.55      , 4.56666667,
@@ -254,3 +254,120 @@ In [67]: 12.253754/0.18728599999999673
 Out[67]: 65.42802985807917
 
 # the numpy way is 65 times faster
+
+# 2.4.5 random walker
+In [4]: np.random.normal(0,1,(2,5))
+Out[4]:
+array([[ 7.19155392e-01,  1.87907853e-01, -9.37426100e-01,
+         9.14263875e-01, -4.70924330e-01],
+       [ 2.88935880e-04, -1.52038245e+00, -2.58812298e-01,
+         1.32224357e+00,  8.74046965e-01]])
+
+In [5]: delat_X = np.random.normal(0,1,(2,5))
+
+In [6]: plt.plot(delta_X[0], delta_X[1], "go")
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-6-948235b6d22d> in <module>()
+----> 1 plt.plot(delta_X[0], delta_X[1], "go")
+
+NameError: name 'delta_X' is not defined
+
+In [7]: delta_X = np.random.normal(0,1,(2,5))
+
+In [8]: plt.plot(delta_X[0], delta_X[1], "go")
+Out[8]: [<matplotlib.lines.Line2D at 0x10ca6c3c8>]
+
+In [9]: plt.show()
+
+In [10]: #cumulative sum
+
+In [11]: np.cumsum(delta_X, axis = 1)
+Out[11]:
+array([[-0.34617944, -2.26920512, -0.83789497,  0.77991828,  0.27051583],
+       [ 1.10481844,  0.3265704 ,  0.63198074,  0.01823314,  0.81930526]])
+
+In [12]: delta_X = np.random.normal(0,1,(2,5))
+
+In [13]: pos_X_at_time_T = np.cumsum(delta_X, axis = 1)
+
+In [14]: plt.plot(pos_X_at_time_T[0], pos_X_at_time_T[1])
+Out[14]: [<matplotlib.lines.Line2D at 0x108474208>]
+
+In [15]: plt.plot(pos_X_at_time_T[0], pos_X_at_time_T[1], 'ro-')
+Out[15]: [<matplotlib.lines.Line2D at 0x11445f400>]
+
+In [16]: plt.savefig('random_walk.pdf')
+
+In [17]: plt.show()
+
+In [18]: # this makes first 4 rw steps
+
+In [19]: # but it doesnt start at the origin
+
+In [20]: X_origin = np.array([[0],[0]])
+
+In [21]: X_origin
+Out[21]:
+array([[0],
+       [0]])
+
+In [22]: np.concatenate((X_origin, np.cumsum(delta_X, axis=1)), axis=1)
+Out[22]:
+array([[ 0.        ,  0.90550998,  1.52827348,  1.47961791,  2.58564104,
+         3.65978246],
+       [ 0.        , -0.72152053,  0.30167422, -0.14845046,  0.64411234,
+        -0.66591205]])
+
+In [23]: X = np.concatenate((X_origin, np.cumsum(delta_X, axis=1)), axis=1)
+
+In [24]: X
+Out[24]:
+array([[ 0.        ,  0.90550998,  1.52827348,  1.47961791,  2.58564104,
+         3.65978246],
+       [ 0.        , -0.72152053,  0.30167422, -0.14845046,  0.64411234,
+        -0.66591205]])
+
+In [25]: # gives steps but with origin
+
+In [26]: orig_pos_X_at_time_T = np.concatenate((X_origin, np.cumsum(delta_X, axi
+    ...: s=1)), axis=1)
+
+In [27]: orig_plt.plot(pos_X_at_time_T[0], orig_pos_X_at_time_T[1], 'ro-')
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-27-574562fe7ed2> in <module>()
+----> 1 orig_plt.plot(pos_X_at_time_T[0], orig_pos_X_at_time_T[1], 'ro-')
+
+NameError: name 'orig_plt' is not defined
+
+In [28]: orig_plt.plot(pos_X_at_time_T[0], orig_pos_X_at_time_T[1], 'ro-')
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-28-574562fe7ed2> in <module>()
+----> 1 orig_plt.plot(pos_X_at_time_T[0], orig_pos_X_at_time_T[1], 'ro-')
+
+NameError: name 'orig_plt' is not defined
+
+In [29]:
+
+In [29]: plt.plot(orig_pos_X_at_time_T[0], orig_pos_X_at_time_T[1], 'ro-')
+Out[29]: [<matplotlib.lines.Line2D at 0x1144cdf28>]
+
+In [30]: plt.savefig("randomwalkorigin.pdf")
+
+In [31]: plt.show()
+
+In [32]: delta_X = np.random.normal(0,1,(2,100))
+
+In [33]: orig_pos_X_at_time_T = np.concatenate((X_origin, np.cumsum(delta_X, axi
+    ...: s=1)), axis=1)
+
+In [34]: plt.plot(orig_pos_X_at_time_T[0], orig_pos_X_at_time_T[1], 'ro-')
+Out[34]: [<matplotlib.lines.Line2D at 0x11453f470>]
+
+In [35]: plt.savefig("randomwalkorigin100.pdf")
+
+In [36]: plt.show()
+
+In [37]: 
