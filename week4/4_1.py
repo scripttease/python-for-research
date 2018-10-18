@@ -216,3 +216,73 @@ plt.savefig("corr_whisky.pdf")
 # you can see that we are getting corelations in the data but they are hard to decipher.
 
 #4.1.4 Clustering whiskies by Flavour profile
+# import co-clustering methid:
+from sklearn.cluster.bicluster import SpectralCoclustering
+
+# make our clustering model with 6 clusters (dont worry about random state for now)
+model = SpectralCoclustering(n_clusters=6, random_state=0)
+
+model.fit(corr_whisky)
+# SpectralCoclustering(init='k-means++', mini_batch=False, n_clusters=6,
+#            n_init=10, n_jobs=1, n_svd_vecs=None, random_state=0,
+#            svd_method='randomized')
+
+# this is how you examine this data, no idea why!!
+model.rows_
+
+# sum the model rows to see how many observations in each cluster
+
+np.sum(model.rows_, axis=1)
+# Out[143]: array([20,  5, 19, 17,  6, 19])
+
+# sum the rows which say how many observations n each cluster which should be 1 for all of them.
+np.sum(model.rows_, axis=0)
+#Out[144]:
+array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+
+# can look at row labels to see which observation belongs to which cluster (0 to 5)
+
+model.row_labels_
+# Out[145]:
+# array([5, 2, 3, 4, 5, 0, 3, 2, 5, 3, 2, 0, 5, 0, 5, 5, 0, 5, 0, 1, 3, 4,
+#        3, 4, 3, 3, 2, 2, 3, 2, 3, 5, 0, 0, 0, 5, 2, 3, 0, 1, 0, 3, 2, 2,
+#        2, 0, 5, 0, 0, 3, 3, 2, 2, 2, 0, 1, 5, 4, 4, 0, 3, 5, 2, 5, 5, 2,
+#        1, 5, 1, 0, 2, 5, 0, 5, 2, 5, 3, 4, 5, 3, 0, 3, 2, 0, 2, 0],
+#       dtype=int32)
+
+
+# extract labels from model (clusters) and append to whisky table as 'group' column and specify their indicies
+
+whisky['Group'] = pd.Series(model.row_labels_, index=whisky.index)
+
+# reorder the rows using the group label
+
+whisky = whisky.ix[np.argsort(model.row_labels_)]
+
+# reset the index of the dataframe
+
+whisky = whisky.reset_index(drop=True)
+# recalc the corelation matrix
+
+correlations = pd.DataFrame.corr(whisky.iloc[:, 2:14].transpose())
+
+# turn from a datafram into an aray
+correlations = np.array(correlations)
+
+# plot orriginal and clustered ceoficcients
+
+plt.figure(figsize = (14,7))
+plt.subplot(121)
+plt.pcolor(corr_whisky)
+plt.title("Original")
+plt.axis("tight")
+plt.subplot(122)
+plt.pcolor(correlations)
+plt.title("rearranged")
+plt.axis("tight")
+plt.savefig("correlations.pdf")
+
+
